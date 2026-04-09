@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="light">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mewsterest</title>
+  <style>
+    [data-theme="light"] {
+      --bg: #f5f5f5;
+      --header-bg: #ffffff;
+      --card-bg: #ffffff;
+      --border: #eeeeee;
+      --text: #333333;
+      --text-muted: #bbbbbb;
+      --tab-idle-bg: #f0f0f0;
+      --tab-idle-color: #666666;
+      --tab-hover-bg: #e3f2fd;
+      --header-shadow: rgba(0, 0, 0, 0.06);
+      --toggle-bg: #e0e0e0;
+      --toggle-knob: #ffffff;
+      --modal-bg: rgba(0, 0, 0, 0.65);
+    }
+
+    [data-theme="dark"] {
+      --bg: #1a1a1a;
+      --header-bg: #242424;
+      --card-bg: #2e2e2e;
+      --border: #3a3a3a;
+      --text: #f0f0f0;
+      --text-muted: #777777;
+      --tab-idle-bg: #3a3a3a;
+      --tab-idle-color: #aaaaaa;
+      --tab-hover-bg: #1e3a5f;
+      --header-shadow: rgba(0, 0, 0, 0.3);
+      --toggle-bg: #2196F3;
+      --toggle-knob: #ffffff;
+      --modal-bg: rgba(0, 0, 0, 0.8);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      transition: background 0.25s, color 0.25s;
+    }
+
+    .header {
+      background: var(--header-bg);
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 1px 8px var(--header-shadow);
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      height: 64px;
+      gap: 20px;
+      position: sticky;
+      top: 0;
+      z-index: 999;
+      transition: background 0.25s, border-color 0.25s;
+    }
+
+    .logo-name {
+      font-size: 20px;
+      font-weight: bold;
+      color: #2196F3;
+      letter-spacing: -0.3px;
+      white-space: nowrap;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 6px;
+      flex: 1;
+    }
+
+    .tab-btn {
+      padding: 8px 20px;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 14px;
+      background: var(--tab-idle-bg);
+      color: var(--tab-idle-color);
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .tab-btn:hover {
+      background: var(--tab-hover-bg);
+      color: #2196F3;
+    }
+
+    .tab-btn.active {
+      background: #2196F3;
+      color: white;
+    }
+
+    .count-badge {
+      background: #e3f2fd;
+      color: #2196F3;
+      border-radius: 10px;
+      font-size: 11px;
+      padding: 2px 7px;
+      margin-left: 5px;
+      font-weight: bold;
+    }
+
+    .tab-btn.active .count-badge {
+      background: rgba(255, 255, 255, 0.3);
+      color: white;
+    }
+
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+
+    .theme-label {
+      font-size: 13px;
+      color: var(--tab-idle-color);
+      user-select: none;
+    }
+
+    .toggle-track {
+      width: 44px;
+      height: 24px;
+      background: var(--toggle-bg);
+      border-radius: 12px;
+      position: relative;
+      cursor: pointer;
+      transition: background 0.25s;
+      border: none;
+      padding: 0;
+      flex-shrink: 0;
+    }
+
+    .toggle-knob {
+      width: 18px;
+      height: 18px;
+      background: var(--toggle-knob);
+      border-radius: 50%;
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      transition: transform 0.25s;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    [data-theme="dark"] .toggle-knob {
+      transform: translateX(20px);
+    }
+
+    .content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px 16px 80px;
+    }
+
+    .cats-grid {
+      columns: 5 200px;
+      column-gap: 12px;
+    }
+
+    .cat-card {
+      break-inside: avoid;
+      margin-bottom: 12px;
+      border-radius: 14px;
+      overflow: hidden;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      transition: transform 0.15s, box-shadow 0.15s, background 0.25s, border-color 0.25s;
+    }
+
+    .cat-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+    }
+
+    .card-img-wrap {
+      position: relative;
+    }
+
+    .cat-card img {
+      width: 100%;
+      height: auto;
+      display: block;
+      cursor: pointer;
+      background: var(--border);
+    }
+
+    .like-btn {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 32px;
+      color: rgba(255, 255, 255, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s, transform 0.2s;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+      user-select: none;
+    }
+
+    .like-btn:hover {
+      color: #2196F3;
+      transform: scale(1.1);
+    }
+
+    .like-btn.liked {
+      color: #2196F3;
+    }
+
+    .like-btn:active {
+      transform: scale(1.3);
+    }
+
+    .empty-block {
+      text-align: center;
+      padding: 80px 20px;
+      color: var(--text-muted);
+    }
+
+    .empty-block .icon {
+      font-size: 60px;
+      margin-bottom: 16px;
+    }
+
+    .empty-block p {
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    .loader {
+      text-align: center;
+      padding: 32px;
+      color: var(--text-muted);
+      font-size: 14px;
+      display: none;
+    }
+
+    .loader.visible {
+      display: block;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 32px;
+      height: 32px;
+      border: 3px solid var(--border);
+      border-top-color: #2196F3;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin-bottom: 8px;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .modal-bg {
+      position: fixed;
+      inset: 0;
+      background: var(--modal-bg);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-bg.open {
+      display: flex;
+    }
+
+    .modal-box {
+      background: var(--card-bg);
+      border-radius: 18px;
+      max-width: 520px;
+      width: 100%;
+      overflow: hidden;
+      position: relative;
+      transition: background 0.25s;
+    }
+
+    .modal-box img {
+      width: 100%;
+      display: block;
+    }
+
+    .modal-footer {
+      padding: 14px 18px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+    }
+
+    .modal-like-btn {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 9px 20px;
+      border-radius: 30px;
+      border: none;
+      background: #e3f2fd;
+      color: #2196F3;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .modal-like-btn:hover,
+    .modal-like-btn.liked {
+      background: #2196F3;
+      color: white;
+    }
+
+    .modal-close-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(0, 0, 0, 0.5);
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    @media (max-width: 900px) {
+      .cats-grid {
+        columns: 3 180px;
+      }
+    }
+
+    @media (max-width: 580px) {
+      .cats-grid {
+        columns: 2 140px;
+      }
+
+      .logo-name {
+        font-size: 16px;
+      }
+
+      .header {
+        padding: 0 12px;
+        gap: 12px;
+      }
+
+      .theme-label {
+        display: none;
+      }
+    }
+
+    @media (max-width: 360px) {
+      .cats-grid {
+        columns: 1;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="header">
+    <div class="logo-wrap">
+      <span class="logo-name">Mewsterest</span>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" id="btnAll" onclick="showTab('all')">Все котики</button>
+      <button class="tab-btn" id="btnFav" onclick="showTab('fav')">
+        Любимые <span class="count-badge" id="favCounter">0</span>
+      </button>
+    </div>
+
+    <div class="theme-toggle">
+      <span class="theme-label" id="themeLabel">☀️</span>
+      <button class="toggle-track" onclick="toggleTheme()" title="Сменить тему">
+        <div class="toggle-knob"></div>
+      </button>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="cats-grid" id="catsGrid"></div>
+    <div class="loader" id="loader">
+      <div class="spinner"></div>
+      <div>Загружаем котиков…</div>
+    </div>
+    <div id="scrollAnchor" style="height:1px;"></div>
+  </div>
+
+  <div class="modal-bg" id="modalBg" onclick="handleModalClick(event)">
+    <div class="modal-box">
+      <button class="modal-close-btn" onclick="closeModal()">✕</button>
+      <img id="modalImg" src="" alt="котик" />
+      <div class="modal-footer">
+        <button class="modal-like-btn" id="modalLikeBtn" onclick="likeFromModal()">
+          ♥ <span id="modalLikeText">В любимые</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_KEY = 'live_HHwEisgFZxiuHuPBWXizJxC3ntDGLEkXIfJYBE1yaCddxiNyppZ51UtTe90rlvBd';
+    const API_URL = 'https://api.thecatapi.com/v1/images/search';
+    const PAGE_LIMIT = 20;
+
+    let currentTab = 'all';
+    let currentModalId = null;
+    let isLoading = false;
+    let favorites = JSON.parse(localStorage.getItem('mewsterest_favs') || '{}');
+    let isDark = localStorage.getItem('mewsterest_theme') === 'dark';
+
+    applyTheme();
+    updateCounter();
+
+    async function fetchCats() {
+      if (isLoading) return;
+      isLoading = true;
+      showLoader(true);
+
+      try {
+        const res = await fetch(`${API_URL}?limit=${PAGE_LIMIT}&order=RAND`, {
+          headers: { 'x-api-key': API_KEY }
+        });
+        const cats = await res.json();
+        cats.forEach(cat => appendCard(cat));
+      } catch (e) {
+        console.error('Ошибка загрузки:', e);
+      }
+
+      isLoading = false;
+      showLoader(false);
+    }
+
+    function showLoader(visible) {
+      document.getElementById('loader').classList.toggle('visible', visible);
+    }
+
+    function toggleTheme() {
+      isDark = !isDark;
+      localStorage.setItem('mewsterest_theme', isDark ? 'dark' : 'light');
+      applyTheme();
+    }
+
+    function applyTheme() {
+      document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+      document.getElementById('themeLabel').textContent = isDark ? '🌙' : '☀️';
+    }
+
+    function isLiked(catId) {
+      return !!favorites[catId];
+    }
+
+    function toggleLike(cat) {
+      if (favorites[cat.id]) {
+        delete favorites[cat.id];
+      } else {
+        favorites[cat.id] = cat;
+      }
+
+      localStorage.setItem('mewsterest_favs', JSON.stringify(favorites));
+      updateCounter();
+
+      const btn = document.querySelector(`[data-id="${cat.id}"] .like-btn`);
+      if (btn) btn.classList.toggle('liked', isLiked(cat.id));
+
+      if (currentTab === 'fav' && !isLiked(cat.id)) {
+        const card = document.querySelector(`[data-id="${cat.id}"]`);
+        if (card) card.remove();
+        if (!document.querySelector('.cat-card')) showEmpty();
+      }
+    }
+
+    function updateCounter() {
+      document.getElementById('favCounter').textContent = Object.keys(favorites).length;
+    }
+
+    function createCard(cat) {
+      const card = document.createElement('div');
+      card.className = 'cat-card';
+      card.dataset.id = cat.id;
+
+      card.innerHTML = `
+        <div class="card-img-wrap">
+          <img src="${cat.url}" alt="котик" loading="lazy" onclick="openModalById('${cat.id}')">
+          <button class="like-btn ${isLiked(cat.id) ? 'liked' : ''}" 
+                  title="В любимые" 
+                  onclick="toggleLikeById('${cat.id}')">
+            ❤
+          </button>
+        </div>
+      `;
+      return card;
+    }
+
+    function openModalById(id) {
+      const card = document.querySelector(`[data-id="${id}"]`);
+      const img = card.querySelector('img');
+      openModal({ id: id, url: img.src });
+    }
+
+    function toggleLikeById(id) {
+      const card = document.querySelector(`[data-id="${id}"]`);
+      const img = card.querySelector('img');
+      toggleLike({ id: id, url: img.src });
+    }
+
+    function appendCard(cat) {
+      document.getElementById('catsGrid').appendChild(createCard(cat));
+    }
+
+    function showEmpty() {
+      document.getElementById('catsGrid').innerHTML = `
+        <div class="empty-block">
+          <div class="icon"></div>
+          <p>Пока нет любимых котиков.<br>Нажми ♥ чтобы добавить!</p>
+        </div>
+      `;
+    }
+
+    function showTab(tab) {
+      currentTab = tab;
+      document.getElementById('btnAll').classList.toggle('active', tab === 'all');
+      document.getElementById('btnFav').classList.toggle('active', tab === 'fav');
+
+      const grid = document.getElementById('catsGrid');
+      grid.innerHTML = '';
+
+      if (tab === 'all') {
+        fetchCats();
+      } else {
+        const favList = Object.values(favorites);
+        if (!favList.length) {
+          showEmpty();
+        } else {
+          favList.forEach(cat => grid.appendChild(createCard(cat)));
+        }
+      }
+    }
+
+    function openModal(cat) {
+      currentModalId = cat.id;
+      document.getElementById('modalImg').src = cat.url;
+      updateModalBtn();
+      document.getElementById('modalBg').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      document.getElementById('modalBg').classList.remove('open');
+      document.body.style.overflow = '';
+      currentModalId = null;
+    }
+
+    function handleModalClick(e) {
+      if (e.target === document.getElementById('modalBg')) closeModal();
+    }
+
+    function likeFromModal() {
+      if (!currentModalId) return;
+      const cat = favorites[currentModalId] || { id: currentModalId, url: document.getElementById('modalImg').src };
+      toggleLike(cat);
+      updateModalBtn();
+    }
+
+    function updateModalBtn() {
+      const liked = isLiked(currentModalId);
+      document.getElementById('modalLikeBtn').classList.toggle('liked', liked);
+      document.getElementById('modalLikeText').textContent = liked ? 'Убрать из любимых' : 'В любимые';
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeModal();
+    });
+
+    const observer = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && currentTab === 'all') fetchCats();
+    }, { rootMargin: '300px' });
+
+    observer.observe(document.getElementById('scrollAnchor'));
+
+    showTab('all');
+  </script>
+
+</body>
+
+</html>
