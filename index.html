@@ -205,26 +205,51 @@
       border: none;
       cursor: pointer;
       font-size: 32px;
-      color: rgba(255, 255, 255, 0.8);
+      color: rgba(255, 255, 255, 0.95);
       display: flex;
       align-items: center;
       justify-content: center;
       transition: color 0.2s, transform 0.2s;
-      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
       user-select: none;
     }
 
     .like-btn:hover {
-      color: #2196F3;
+      color: #ff4d4d;
       transform: scale(1.1);
     }
 
     .like-btn.liked {
-      color: #2196F3;
+      color: #ff4d4d;
+    }
+
+    .heart-icon {
+      width: 1em;
+      height: 1em;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      transition: fill 0.2s, stroke 0.2s;
+    }
+
+    .liked .heart-icon {
+      fill: currentColor;
+    }
+
+    .like-btn.liked .heart-icon {
+      animation: heartbeat 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes heartbeat {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.25); }
+      100% { transform: scale(1); }
     }
 
     .like-btn:active {
-      transform: scale(1.3);
+      transform: scale(1.2);
     }
 
     .empty-block {
@@ -316,8 +341,8 @@
       padding: 9px 20px;
       border-radius: 30px;
       border: none;
-      background: #e3f2fd;
-      color: #2196F3;
+      background: #fff0f0;
+      color: #ff4d4d;
       font-size: 14px;
       font-weight: bold;
       cursor: pointer;
@@ -326,7 +351,7 @@
 
     .modal-like-btn:hover,
     .modal-like-btn.liked {
-      background: #2196F3;
+      background: #ff4d4d;
       color: white;
     }
 
@@ -417,7 +442,8 @@
       <img id="modalImg" src="" alt="котик" />
       <div class="modal-footer">
         <button class="modal-like-btn" id="modalLikeBtn" onclick="likeFromModal()">
-          ♥ <span id="modalLikeText">В любимые</span>
+          <svg viewBox="0 0 24 24" class="heart-icon"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+          <span id="modalLikeText">В любимые</span>
         </button>
       </div>
     </div>
@@ -427,6 +453,7 @@
     const API_KEY = 'live_HHwEisgFZxiuHuPBWXizJxC3ntDGLEkXIfJYBE1yaCddxiNyppZ51UtTe90rlvBd';
     const API_URL = 'https://api.thecatapi.com/v1/images/search';
     const PAGE_LIMIT = 20;
+    const HEART_SVG = `<svg viewBox="0 0 24 24" class="heart-icon"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
 
     let currentTab = 'all';
     let currentModalId = null;
@@ -510,7 +537,7 @@
           <button class="like-btn ${isLiked(cat.id) ? 'liked' : ''}" 
                   title="В любимые" 
                   onclick="toggleLikeById('${cat.id}')">
-            ❤
+            ${HEART_SVG}
           </button>
         </div>
       `;
